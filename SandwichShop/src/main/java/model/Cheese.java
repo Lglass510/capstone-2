@@ -1,32 +1,39 @@
 package model;
 
-public class Cheese extends Topping {
-    public Cheese(String name, boolean isExtra) {
-        super(name, true, isExtra);
+public class Cheese implements Topping {
+    private final String name;
+    private final boolean isExtra;
+
+    public Cheese(String name, boolean isExtra){
+        this.name = name;
+        this.isExtra = isExtra;
 
     }
-    public String getName() {return name;}
+    @Override
+    public String getName(){
+        return name + (isExtra ? " (extra)" : "");
+    }
+    @Override
+    public ToppingType getType(){
+        return ToppingType.CHEESE;
+    }
 
     @Override
-    public double getPrice(SandwichSize size) {
-        double base;
-        switch (size) {
-            case FOUR -> base = 0.75;
-            case EIGHT -> base = 1.50;
-            case TWELVE -> base = 2.25;
-            default -> throw new IllegalArgumentException("Not a choice.");
-        }
-        if (isExtra) {
-            switch (size) {
-                case FOUR -> base += 0.30;
-                case EIGHT -> base += 0.60;
-                case TWELVE -> base += 0.90;
-            }
-        }
-        return base;
+    public double getPrice(SandwichSize size){
+        double base = switch (size){
+            case FOUR -> 0.75;
+            case EIGHT -> 1.50;
+            case TWELVE -> 2.25;
+        };
+        return isExtra ? base + switch (size){
+            case FOUR -> 0.30;
+            case EIGHT -> 0.60;
+            case TWELVE -> 0.90;
+        } : base;
+    }
+    @Override
+    public boolean isExtra(){
+        return isExtra;
     }
 
-
 }
-
-
