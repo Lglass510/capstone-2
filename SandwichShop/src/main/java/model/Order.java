@@ -15,7 +15,7 @@ public class Order {
     }
 
     public double calculateTotal(){
-        double total = 0;
+        double total = 0.00;
         for (Sandwich s : sandwiches) total += s.calculateTotalPrice();
         for ( SideItem s : sides) total += s.getPrice();
         return total;
