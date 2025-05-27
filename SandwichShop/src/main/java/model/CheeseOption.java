@@ -1,10 +1,10 @@
 package model;
 
 public enum CheeseOption implements Topping{
-    AMERICAN(1.00, 2.00, 3.00),
-    PROVOLONE(1.00, 2.00, 3.00),
-    CHEDDAR(1.00, 2.00, 3.00),
-    SWISS(1.00, 2.00, 3.00);
+    AMERICAN(0.75, 1.50, 2.25),
+    PROVOLONE(0.75, 1.50, 2.25),
+    CHEDDAR(0.75, 1.50, 2.25),
+    SWISS(0.75, 1.50, 2.25);
 
 
     private final double price4;
@@ -27,9 +27,9 @@ public enum CheeseOption implements Topping{
 
         if (extra) {
             double extraPrice = switch (size) {
-                case FOUR -> 0.50;
-                case EIGHT -> 1.00;
-                case TWELVE -> 1.50;
+                case FOUR -> 0.30;
+                case EIGHT -> 0.60;
+                case TWELVE ->0.90;
             };
             return basePrice + extraPrice;
         }
