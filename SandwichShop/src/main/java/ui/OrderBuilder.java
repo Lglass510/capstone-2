@@ -1,144 +1,229 @@
 package ui;
-import model.*;
 
+import model.*;
 import java.util.*;
 
-import static model.Chips.chipPrice;
+
+import java.util.Scanner;
 
 public class OrderBuilder {
-    private final Scanner sc = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
+    private final Order order = new Order();
 
-    public Order startOrder() {
-        System.out.println("Welcome to Subsonic!");
-        Order order = new Order();
+    public Order buildOrder() {
+        System.out.println("Welcome to Subs4U! Let's build your order.");
 
-        do {
-            Sandwich sandwich = buildSandwich();
-            order.addSandwich(sandwich);
-        } while (askYesOrNo("Would you like to add another sandwich"));
+        boolean ordering = true;
+        while (ordering) {
+            System.out.println("\n1) Add Sandwich");
+            System.out.println("2) Add Side");
+            System.out.println("3) Finish Order");
+            System.out.print("Choose an option: ");
 
-        addSides(order);
+            String choice = scanner.nextLine();
 
-        System.out.println("\nOrder Receipt:");
-        System.out.println(order.getReceipt());
+            switch (choice) {
+                case "1" -> addSandwich();
+                case "2" -> addSide();
+                case "3" -> ordering = false;
+                default -> System.out.println("Invalid choice, try again.");
+            }
+        }
+
+        System.out.println("Order completed.\n");
         return order;
     }
 
-    private Sandwich buildSandwich() {
+    private void addSandwich() {
+        BreadType bread = promptBread();
+        SandwichSize size = promptSize();
 
+        Sandwich sandwich = new Sandwich(size, bread);
 
-        System.out.println("Choose your bread: ");
-        for (int i = 0; i < BreadType.values().length; i++) {
-            System.out.printf("%d) %s%n", i + 1, BreadType.values()[i]);
-        }
-        int breadChoice = getUserChoice(1, BreadType.values().length);
-        BreadType bread = BreadType.values()[breadChoice - 1];
-
-        System.out.println("Choose your sandwich size:");
-        for (int i = 0; i < SandwichSize.values().length; i++) {
-            System.out.printf("%d) %s%n", i + 1, SandwichSize.values()[i]);
-        }
-        int sizeChoice = getUserChoice(1, SandwichSize.values().length);
-        SandwichSize size = SandwichSize.values()[sizeChoice - 1];
-
-        Sandwich sandwich = new Sandwich(bread, size);
-
-        addToppings(sandwich);
-
-        System.out.println("\nHere's your sandwich summary: ");
-        System.out.println(sandwich.getSummary());
-        return sandwich;
-    }
-
-    private void addToppings(Sandwich sandwich) {
-        while (true) {
-            System.out.println("\nChoose a topping category:");
+        boolean addingToppings = true;
+        while (addingToppings) {
+            System.out.println("\nAdd Topping:");
             System.out.println("1) Meat");
             System.out.println("2) Cheese");
             System.out.println("3) Regular Toppings");
-            System.out.println("4) Done");
+            System.out.println("4) Sauce");
+            System.out.println("5) Done adding toppings");
+            System.out.print("Choose an option: ");
 
-            int choice = getUserChoice(1, 4);
+            String choice = scanner.nextLine();
 
             switch (choice) {
-                case 1 -> {
-                    System.out.println("Enter meat name:");
-                    String meat = sc.nextLine();
-                    boolean extra = askExtra();
-                    sandwich.addTopping(new Meat(meat, extra));
-                }
-                case 2 -> {
-                    System.out.println("Enter cheese name:");
-                    String cheese = sc.nextLine();
-                    boolean extra = askExtra();
-                    sandwich.addTopping(new Cheese(cheese, extra));
-                }
-                case 3 -> {
-                    System.out.println("Enter topping name:");
-                    String reg = sc.nextLine();
-                    sandwich.addTopping(new RegularTopping(reg));
-                }
-                case 4 -> {
-                    return;
-                }
+                case "1" -> addToppingFromEnum(sandwich, MeatOption.values());
+                case "2" -> addToppingFromEnum(sandwich, CheeseOption.values());
+                case "3" -> addToppingFromEnum(sandwich, RegularToppingOption.values());
+                case "4" -> addToppingFromEnum(sandwich, SauceOption.values());
+                case "5" -> addingToppings = false;
+                default -> System.out.println("Invalid choice, try again.");
             }
         }
+
+        order.addSandwich(sandwich);
+        System.out.println("Sandwich added to order.");
     }
 
-    private boolean askExtra() {
-        System.out.println("Do you want extra? (yes/no): ");
-        String input = sc.nextLine().trim().toLowerCase();
-        return input.startsWith("y");
+    private void addToppingFromEnum(Sandwich sandwich, Topping[] options) {
+        System.out.println("Available options:");
+        for (int i = 0; i < options.length; i++) {
+            System.out.printf("%d) %s%n", i + 1, options[i]);
+        }
+        System.out.print("Select topping number or 0 to cancel: ");
+
+        String input = scanner.nextLine();
+        int index;
+        try {
+            index = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+            return;
+        }
+
+        if (index == 0) return;
+
+        if (index < 1 || index > options.length) {
+            System.out.println("Invalid choice.");
+            return;
+        }
+
+        Topping topping = options[index - 1];
+        sandwich.addTopping(topping);
+        System.out.println(topping + " added.");
     }
 
-    private int getUserChoice(int min, int max) {
+    private BreadType promptBread() {
+        System.out.println("\nSelect Bread Type:");
+        BreadType[] breads = BreadType.values();
+        for (int i = 0; i < breads.length; i++) {
+            System.out.printf("%d) %s%n", i + 1, breads[i]);
+        }
         while (true) {
-            System.out.println("Your choice: ");
+            System.out.print("Enter choice: ");
+            String input = scanner.nextLine();
             try {
-                int choice = Integer.parseInt(sc.nextLine());
-                if (choice >= min && choice <= max) return choice;
-            } catch (NumberFormatException ignored) {
-            }
-            System.out.println("Invalid input. Try again.");
+                int choice = Integer.parseInt(input);
+                if (choice >= 1 && choice <= breads.length) {
+                    return breads[choice - 1];
+                }
+            } catch (NumberFormatException ignored) {}
+            System.out.println("Invalid choice, try again.");
         }
     }
 
-    private void addSides(Order order){
+    private SandwichSize promptSize() {
+        System.out.println("\nSelect Sandwich Size:");
+        SandwichSize[] sizes = SandwichSize.values();
+        for (int i = 0; i < sizes.length; i++) {
+            System.out.printf("%d) %s inch%n", i + 1, sizes[i].name());
+        }
         while (true) {
-            System.out.println("\nChoose a side: ");
-            System.out.println("1) Chips");
-            System.out.println("2) Drink");
-            System.out.println("3) Sauce");
-            System.out.println("4) Done");
-
-            int choice = getUserChoice(1,4);
-
-            switch (choice){
-                case 1 -> {
-                    System.out.println("Enter chips name: ");
-                    String chipsName = sc.nextLine();
-                    order.addSide(new Chips(chipsName,1.50));
+            System.out.print("Enter choice: ");
+            String input = scanner.nextLine();
+            try {
+                int choice = Integer.parseInt(input);
+                if (choice >= 1 && choice <= sizes.length) {
+                    return sizes[choice - 1];
                 }
-                case 2 -> {
-                    System.out.println("Enter drink name: ");
-                    String drinkName = sc.nextLine();
-                    order.addSide(new Drink(drinkName, drinkPrice));
-                }
-                case 3 -> {
-                    System.out.println("Enter sauce name:");
-                    String sauceName = sc.nextLine();
-                    order.addSide(new Sauce(sauceName));
-                }
-                case 4 -> {
-                    return;
-                }
-            }
+            } catch (NumberFormatException ignored) {}
+            System.out.println("Invalid choice, try again.");
         }
     }
-    private boolean askYesOrNo(String prompt) {
-        System.out.println(prompt + " (yes/no): ");
-        String input = sc.nextLine().trim().toLowerCase();
-        return input.startsWith("y");
+
+    private void addSide() {
+        System.out.println("\nAdd Side:");
+        System.out.println("1) Chips");
+        System.out.println("2) Drink");
+        System.out.print("Choose an option: ");
+
+        String choice = scanner.nextLine();
+
+        switch (choice) {
+            case "1" -> addChip();
+            case "2" -> addDrink();
+            default -> System.out.println("Invalid choice.");
+        }
     }
 
+    private void addChip() {
+        ChipOption[] chips = ChipOption.values();
+        System.out.println("\nSelect Chip Option:");
+        for (int i = 0; i < chips.length; i++) {
+            System.out.printf("%d) %s%n", i + 1, chips[i]);
+        }
+        System.out.print("Enter choice: ");
+        String input = scanner.nextLine();
+
+        try {
+            int choice = Integer.parseInt(input);
+            if (choice >= 1 && choice <= chips.length) {
+                ChipOption chip = chips[choice - 1];
+                order.addSide(() -> chip.toString(), chip.getPrice());
+                System.out.println(chip + " chips added.");
+                return;
+            }
+        } catch (NumberFormatException ignored) {}
+
+        System.out.println("Invalid choice.");
+    }
+
+    private void addDrink() {
+        DrinkOptions[] drinks = DrinkOptions.values();
+        DrinkSize[] sizes = DrinkSize.values();
+
+        System.out.println("\nSelect Drink Option:");
+        for (int i = 0; i < drinks.length; i++) {
+            System.out.printf("%d) %s%n", i + 1, drinks[i]);
+        }
+        System.out.print("Enter choice: ");
+        String drinkInput = scanner.nextLine();
+
+        int drinkChoice;
+        try {
+            drinkChoice = Integer.parseInt(drinkInput);
+            if (drinkChoice < 1 || drinkChoice > drinks.length) {
+                System.out.println("Invalid choice.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+            return;
+        }
+
+        System.out.println("\nSelect Drink Size:");
+        for (int i = 0; i < sizes.length; i++) {
+            System.out.printf("%d) %s%n", i + 1, sizes[i]);
+        }
+        System.out.print("Enter choice: ");
+        String sizeInput = scanner.nextLine();
+
+        int sizeChoice;
+        try {
+            sizeChoice = Integer.parseInt(sizeInput);
+            if (sizeChoice < 1 || sizeChoice > sizes.length) {
+                System.out.println("Invalid choice.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+            return;
+        }
+
+        DrinkOptions selectedDrink = drinks[drinkChoice - 1];
+        DrinkSize selectedSize = sizes[sizeChoice - 1];
+        order.addSide(new SideItem() {
+            @Override
+            public String getName() {
+                return selectedSize + " " + selectedDrink.toString();
+            }
+
+            @Override
+            public double getPrice() {
+                return selectedSize.getPrice();
+            }
+        });
+        System.out.println(selectedSize + " " + selectedDrink + " added.");
+    }
 }

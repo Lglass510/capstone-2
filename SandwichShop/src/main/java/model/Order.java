@@ -1,39 +1,77 @@
 package model;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
     private final List<Sandwich> sandwiches = new ArrayList<>();
-    private final List<SideItem> sides = new ArrayList<>();
+    private final List<Drink> drinks = new ArrayList<>();
+    private final List<Chip> chips = new ArrayList<>();
+    private final LocalDateTime orderTime;
 
-    public void addSandwich(Sandwich sandwich){
+    public Order() {
+        this.orderTime = LocalDateTime.now();
+    }
+
+    public void addSandwich(Sandwich sandwich) {
         sandwiches.add(sandwich);
     }
 
-    public void addSide(SideItem sideItem){
-        sides.add(sideItem);
+    public void addDrink(Drink drink) {
+        drinks.add(drink);
     }
 
-    public double calculateTotal(){
-        double total = 0.00;
-        for (Sandwich s : sandwiches) total += s.calculateTotalPrice();
-        for ( SideItem s : sides) total += s.getPrice();
-        return total;
+    public void addChip(Chip chip) {
+        chips.add(chip);
     }
 
-    public String getReceipt(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("🧾 SUBSONIC RECEIPT\n----------------------------\n");
-        for (Sandwich s : sandwiches) {
-            sb.append(s.getSummary()).append("\n\n");
-        }
-        for(SideItem s : sides){
-            sb.append("Side: ").append(s.getName())
-                    .append(" ($").append(String.format("%.2f", calculateTotal()));
+    public double calculateTotalPrice() {
+        return sandwiches.stream().mapToDouble(Sandwich::calculateTotalPrice).sum()
+        + drinks.stream().mapToDouble(Drink::getPrice).sum()
+        + chips.stream().mapToDouble(Chip::getPrice).sum();
+    }
 
+    public String generateReceipt() {
+        StringBuilder receipt = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        receipt.append("==== Subs4U Order Receipt ====\n");
+        receipt.append("Order Time: ").append(orderTime.format(formatter)).append("\n\n");
+
+
+        for (int i = 0; i < sandwiches.size(); i++) {
+            receipt.append("Sandwich #").append(i + 1).append(":\n");
+            receipt.append(sandwiches.get(i).getSummary()).append("\n");
         }
-        sb.append("---------------------\n");
-        sb.append("TOTAL: $").append(String.format("%.2f", calculateTotal()));
-        return sb.toString();
+
+        if (!drinks.isEmpty()) {
+            receipt.append("Drinks:\n");
+            for (Drink d : drinks) {
+                receipt.append("  - ").append(d.toString())
+                        .append(" ($").append(String.format("%.2f", d.getPrice())).append(")\n");
+            }
+            receipt.append("\n");
+        }
+
+        if (!chips.isEmpty()) {
+            receipt.append("Chips:\n");
+            for (Chip c : chips) {
+                receipt.append("  - ").append(c.toString())
+                        .append(" ($").append(String.format("%.2f", c.getPrice())).append(")\n");
+            }
+            receipt.append("\n");
+        }
+
+        receipt.append("Total Due: $").append(String.format("%.2f", calculateTotalPrice())).append("\n");
+        receipt.append("==============================\n");
+
+        return receipt.toString();
+    }
+
+    public String getTimestampedFilename() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        return "order_" + orderTime.format(formatter) + ".txt";
     }
 }

@@ -4,21 +4,33 @@ package model;
 import static model.SandwichSize.*;
 
 public enum MeatOption implements Topping{
-    STEAK(1.00, 2.00, 3.00),
-    HAM(1.00, 2.00, 3.00),
-    SALAMI(1.00, 2.00, 3.00),
-    ROAST_BEEF(1.00, 2.00, 3.00),
-    CHICKEN(1.00, 2.00, 3.00),
-    BACON(1.00, 2.00, 3.00);
+    STEAK(1.00, 2.00, 3.00 ,"Steak"),
+    HAM(1.00, 2.00, 3.00, "Ham"),
+    SALAMI(1.00, 2.00, 3.00, "Salami"),
+    ROAST_BEEF(1.00, 2.00, 3.00, "Roast Beef"),
+    CHICKEN(1.00, 2.00, 3.00, "Chicken"),
+    BACON(1.00, 2.00, 3.00, "Bacon");
 
     private final double price4;
     private final double price8;
     private final double price12;
+    private final String name;
 
-    MeatOption(double price4, double price8, double price12){
+    MeatOption(double price4, double price8, double price12, String name){
         this.price4 = price4;
         this.price8 = price8;
         this.price12 = price12;
+        this.name = name;
+    }
+
+    @Override
+    public String getName(){
+        return name;
+    }
+
+    @Override
+    public ToppingType getType(){
+        return ToppingType.MEAT;
     }
 
     public double getPrice(SandwichSize size, boolean extra) {

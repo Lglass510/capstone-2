@@ -1,20 +1,32 @@
 package model;
 
 public enum CheeseOption implements Topping{
-    AMERICAN(0.75, 1.50, 2.25),
-    PROVOLONE(0.75, 1.50, 2.25),
-    CHEDDAR(0.75, 1.50, 2.25),
-    SWISS(0.75, 1.50, 2.25);
+    AMERICAN(0.75, 1.50, 2.25, "American"),
+    PROVOLONE(0.75, 1.50, 2.25, "Provolone"),
+    CHEDDAR(0.75, 1.50, 2.25, "Cheddar"),
+    SWISS(0.75, 1.50, 2.25, "Swiss");
 
 
     private final double price4;
     private final double price8;
     private final double price12;
+    private final String name;
 
-    CheeseOption(double price4, double price8, double price12){
+    CheeseOption(double price4, double price8, double price12, String name){
         this.price4 = price4;
         this.price8 = price8;
         this.price12 = price12;
+        this.name = name;
+    }
+
+    @Override
+    public String getName(){
+        return name;
+    }
+
+    @Override
+    public ToppingType getType(){
+        return ToppingType.CHEESE;
     }
 
     public double getPrice(SandwichSize size, boolean extra) {

@@ -1,10 +1,10 @@
 package model;
 
 public enum ChipOption {
-    CLASSIC,
-    BBQ,
-    JALAPENO,
-    CHEDDAR;
+    CLASSIC(1.50),
+    BBQ(1.50),
+    JALAPENO(1.50),
+    CHEDDAR(1.50);
 
     public double getPrice(){
         return 1.50;
