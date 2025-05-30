@@ -8,12 +8,22 @@ import java.util.stream.Collectors;
 public class Sandwich {
     private SandwichSize size;
     private BreadType bread;
+    private boolean toasted;
     private List<Topping> toppings;
 
-    public Sandwich(SandwichSize size, BreadType bread) {
+    public Sandwich(SandwichSize size, BreadType bread, boolean toasted) {
         this.size = size;
         this.bread = bread;
+        this.toasted = toasted;
         this.toppings = new ArrayList<>();
+    }
+
+    public void setToasted(boolean toasted){
+        this.toasted = toasted;
+    }
+
+    public boolean isToasted() {
+        return toasted;
     }
     public void addTopping(Topping topping){
         toppings.add(topping);
@@ -60,7 +70,8 @@ public class Sandwich {
                 summary.append("   - ").append(topping.toString());
                 if(topping instanceof MeatOption meat){
                     if (meat.getPrice(size, true) > 0)
-                    summary.append(" ($").append(String.format("%2.f", meat.getPrice(size, true))).append(")");
+                    summary.append(" ($").append(String.format("%.2f", meat.getPrice(size, true))).append(")");
+
                 } else if (topping instanceof CheeseOption cheese) {
                     if(cheese.getPrice(size, true) > 0){
                         summary.append(" ($").append(String.format("%.2f", cheese.getPrice(size, true)));

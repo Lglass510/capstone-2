@@ -1,21 +1,26 @@
 package model;
 
-public class Drink {
+public class Drink implements SideItem{
 
-    private final DrinkType type;
+    private final DrinkOptions options;
     private final DrinkSize size;
 
-    public Drink(DrinkType type, DrinkSize size) {
-        this.type = type;
+    public Drink(DrinkOptions options, DrinkSize size) {
+        this.options = options;
         this.size = size;
+    }
+
+    @Override
+    public String getName() {
+        return " ";
     }
 
     public double getPrice() {
         return size.getPrice();
     }
 
-    public DrinkType getType() {
-        return type;
+    public DrinkOptions getDrinkOptions() {
+        return options;
     }
 
     public DrinkSize getSize() {
@@ -24,7 +29,7 @@ public class Drink {
 
     @Override
     public String toString() {
-        return size.name().charAt(0) + size.name().substring(1).toLowerCase() + " " + type;
+        return size.name().charAt(0) + size.name().substring(1).toLowerCase() + " " + options;
     }
 }
 

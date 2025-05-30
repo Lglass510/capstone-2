@@ -1,11 +1,18 @@
 package model;
 
-public class Chip {
+public class Chip implements SideItem{
 
     private final ChipOption option;
+    private final String name;
 
-    public Chip(ChipOption option) {
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public Chip(ChipOption option, String name) {
         this.option = option;
+        this.name = name;
     }
 
     public ChipOption getOption() {

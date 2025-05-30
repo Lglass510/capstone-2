@@ -7,30 +7,43 @@ import java.util.List;
 
 public class Order {
     private final List<Sandwich> sandwiches = new ArrayList<>();
-    private final List<Drink> drinks = new ArrayList<>();
-    private final List<Chip> chips = new ArrayList<>();
+    private List<SideItem> sides = new ArrayList<>();
+    private List<ChipOption> chips = new ArrayList<>();
+    private List<Drink> drinks = new ArrayList<>();
     private final LocalDateTime orderTime;
 
     public Order() {
         this.orderTime = LocalDateTime.now();
     }
 
+    public List<Sandwich> getSandwiches() {
+        return sandwiches;
+    }
+
+    public void addSide(SideItem side) {
+        sides.add(side);
+    }
+
+    public void addChip(ChipOption chip) {
+        chips.add(chip);
+    }
+    public void addDrink(Drink drink){
+        drinks.add(drink);
+    }
+
+    public List<SideItem> getSides() {
+        return sides;
+    }
+
     public void addSandwich(Sandwich sandwich) {
         sandwiches.add(sandwich);
     }
 
-    public void addDrink(Drink drink) {
-        drinks.add(drink);
-    }
-
-    public void addChip(Chip chip) {
-        chips.add(chip);
-    }
 
     public double calculateTotalPrice() {
-        return sandwiches.stream().mapToDouble(Sandwich::calculateTotalPrice).sum()
-        + drinks.stream().mapToDouble(Drink::getPrice).sum()
-        + chips.stream().mapToDouble(Chip::getPrice).sum();
+        double sandwichesTotal = sandwiches.stream().mapToDouble(Sandwich::calculateTotalPrice).sum();
+        double sidesTotal = sides.stream().mapToDouble(SideItem::getPrice).sum();
+        return sandwichesTotal + sidesTotal;
     }
 
     public String generateReceipt() {
@@ -46,20 +59,11 @@ public class Order {
             receipt.append(sandwiches.get(i).getSummary()).append("\n");
         }
 
-        if (!drinks.isEmpty()) {
-            receipt.append("Drinks:\n");
-            for (Drink d : drinks) {
-                receipt.append("  - ").append(d.toString())
-                        .append(" ($").append(String.format("%.2f", d.getPrice())).append(")\n");
-            }
-            receipt.append("\n");
-        }
-
-        if (!chips.isEmpty()) {
-            receipt.append("Chips:\n");
-            for (Chip c : chips) {
-                receipt.append("  - ").append(c.toString())
-                        .append(" ($").append(String.format("%.2f", c.getPrice())).append(")\n");
+        if (!sides.isEmpty()) {
+            receipt.append("Sides:\n");
+            for (SideItem side : sides) {
+                receipt.append("  - ").append(side.getName())
+                        .append(" ($").append(String.format("%.2f", side.getPrice())).append(")\n");
             }
             receipt.append("\n");
         }
