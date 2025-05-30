@@ -51,14 +51,14 @@ public class Sandwich {
 
     private String formatToppingsByType(ToppingType type){
         List<String> names = toppings.stream()
-                .filter(t -> t.getType() == type)
-                .map(Topping:: getName)
-                .collect(Collectors.toList());
+                .filter(t -> t.getType() == type) //filter by type name
+                .map(Topping:: getName)//converts topping to its string name
+                .collect(Collectors.toList()); // collects names into new list
         return names.isEmpty() ? "None" : String.join(",", names);
     }
 
     public String getSummary(){
-        StringBuilder summary = new StringBuilder();
+        StringBuilder summary = new StringBuilder(); // add strings in sequence for readable summary
         summary.append(" Size: ").append(size).append("\n");
         summary.append(" Bread").append(bread).append("\n");
         summary.append(" Toppings:\n");
@@ -80,7 +80,7 @@ public class Sandwich {
                 summary.append("\n");
             }
         }
-        summary.append(" Sandwich Price: %")
+        summary.append(" Sandwich Price: $")
                 .append(String.format("%.2f", calculateTotalPrice()))
                 .append("\n");
         return summary.toString();
