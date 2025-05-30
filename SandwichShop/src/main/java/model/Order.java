@@ -40,10 +40,10 @@ public class Order {
     }
 
 
-    public double calculateTotalPrice() {
+    public double calculateTotalPrice() { //call method on each sandwich
         double sandwichesTotal = sandwiches.stream().mapToDouble(Sandwich::calculateTotalPrice).sum();
-        double sidesTotal = sides.stream().mapToDouble(SideItem::getPrice).sum();
-        return sandwichesTotal + sidesTotal;
+        double sidesTotal = sides.stream().mapToDouble(SideItem::getPrice).sum(); //call getprice on sides
+        return sandwichesTotal + sidesTotal; //add all values
     }
 
     public String generateReceipt() {
